@@ -47,6 +47,5 @@ typedef union {
 	char *sval;
 } Lexval;
 
-int ret(int val);
 char *newstring(char *s);
 int line;

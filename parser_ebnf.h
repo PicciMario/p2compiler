@@ -1,6 +1,7 @@
 void next();
 void match(int symbol);
 void print_error();
+
 void parse();
 void parse_program();
 void parse_stat_list();

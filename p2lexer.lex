@@ -90,21 +90,6 @@ not			{return(NOT);}
 
 %%
 
-int ret(int val){
-	//fprintf(stderr, "line %i: %i (%s)\n", line, val, yytext);
-	
-	//if (val == INTCONST){ fprintf(stderr, " (int constant: %i)", lexval.ival); }
-	
-	//fprintf(stderr, "\n");
-	
-	//if (val == ERROR){
-	//	fprintf(stderr, "Error on line %i, aborting...\n", line);
-	//	exit(1);
-	//}
-	
-	return val;
-}
-
 char *newstring(char *s){
 	char *p = malloc(strlen(s) + 1);
 	strcpy(p, s);

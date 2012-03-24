@@ -17,7 +17,7 @@ int main() {
 void next(){
 	int result = yylex();
 	if (result == ERROR){
-		printf("Errore sintattico alla linea %d - %s\n", line, yytext);
+		printf("Errore - sintattico alla linea %d - %s\n", line, yytext);
 	}
 	else {
 		lookahead = result;
@@ -29,12 +29,12 @@ void match(int symbol){
 			next();
 	}
 	else {
-		printf("Linea %d: Mi aspettavo %d che è diverso da %d (yytext: %s)\n", line, symbol, lookahead, yytext);
+		printf("Errore - linea %d: mi aspettavo %d, invece ho %d (yytext: %s)\n", line, symbol, lookahead, yytext);
 	}
 }
 
 void print_error(){
-		printf("Errore alla linea %d (yytext: %s)\n", line, yytext);
+		printf("Errore - linea %d (yytext: %s)\n", line, yytext);
 }
 
 void parse(){
