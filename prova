@@ -1,0 +1,20 @@
+program
+  integer a, b, c;
+  table(alpha: integer, beta: string, gamma: boolean) t1, t2;
+  a = b;
+  t1 = {(1, "sun"),(2, "moon")};
+  t2 = {};
+  t3 = project [a,b] select [a == b] t1;
+  a = (a == b) and (a <= b+1*(c-22)) or c;
+  t3 = t1 join [a == b ] t2;
+  read t1;
+  write ["t2.dat"] t2;
+  write [ s ] t3;
+  if x!=y then x = y+1 end;
+  if x==y then x = y-2 else read t2 end;
+  while true do
+    while false do
+      a = a and b
+    end
+  end
+end

@@ -1,8 +1,7 @@
 %{
 #include <stdio.h>
-#include "p2lexer.h"
+#include "p2symbols.h"
 Lexval lexval;
-int line = 1;
 %}
 
 %option noyywrap
@@ -90,24 +89,19 @@ not			{ret(NOT);}
 
 %%
 
-main()
-{
-  yylex();
-}
-
-void ret(int val){
-	fprintf(stderr, "line %i: %i (%s)", line, val, yytext);
+int ret(int val){
+	//fprintf(stderr, "line %i: %i (%s)", line, val, yytext);
 	
-	if (val == INTCONST){ fprintf(stderr, " (int constant: %i)", lexval.ival); }
+	//if (val == INTCONST){ fprintf(stderr, " (int constant: %i)", lexval.ival); }
 	
-	fprintf(stderr, "\n");
+	//fprintf(stderr, "\n");
 	
-	if (val == ERROR){
-		fprintf(stderr, "Error on line %i, aborting...\n", line);
-		exit(1);
-	}
+	//if (val == ERROR){
+	//	fprintf(stderr, "Error on line %i, aborting...\n", line);
+	//	exit(1);
+	//}
 	
-	//return val;
+	return val;
 }
 
 char *newstring(char *s){
