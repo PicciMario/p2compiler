@@ -7,16 +7,17 @@
 int lookahead;
 
 int main() {
+	printf("\nCompiling, please wait..\n");
 	line = 1;
 	parse();
+	printf("Compilation successful.\n\n");
 	return 0;
 }
 
 void next(){
 	int result = yylex();
-	printf("Next symbol: %d\n", result);
 	if (result == ERROR){
-		printf("Errore sintattico alla linea %d - %s", line, yytext);
+		printf("Errore sintattico alla linea %d - %s\n", line, yytext);
 	}
 	else {
 		lookahead = result;
@@ -25,17 +26,15 @@ void next(){
 
 void match(int symbol){
 	if (lookahead == symbol){
-			printf("Matched symbol: %d\n", symbol);
 			next();
 	}
 	else {
-		printf("Linea %d: Mi aspettavo %d che è diverso da %d (%s)\n", line, symbol, lookahead, yytext);
+		printf("Linea %d: Mi aspettavo %d che è diverso da %d (yytext: %s)\n", line, symbol, lookahead, yytext);
 	}
 }
 
 void print_error(){
 		printf("Errore alla linea %d (yytext: %s)\n", line, yytext);
-		exit(1);
 }
 
 void parse(){
@@ -81,7 +80,8 @@ void parse_stat(){
 			parse_write_stat();
 			break;
 		default:
-			print_error();
+			fprintf(stderr, "Errore - riga %d durante chiamata funzione %s\n", line, __func__);
+			next();
 	}
 }
 
@@ -109,7 +109,8 @@ void parse_type() {
 			parse_table_type();
 			break;
 		default:
-			print_error();
+			fprintf(stderr, "Errore - riga %d durante chiamata funzione %s\n", line, __func__);
+			next();
 	}	
 }
 
@@ -122,6 +123,7 @@ void parse_atomic_type() {
 			break;
 		default:
 			print_error();
+			next();
 	}
 }
 
@@ -171,6 +173,7 @@ void parse_bool_term(){
 		case LE:
 			next();
 			parse_comp_term();
+			break;		
 	}
 }
 
@@ -243,7 +246,8 @@ void parse_unary_op(){
 			parse_rename_op();
 			break;
 		default:
-			print_error();
+			fprintf(stderr, "Errore - riga %d durante chiamata funzione %s\n", line, __func__);
+			next();
 	}
 }
 

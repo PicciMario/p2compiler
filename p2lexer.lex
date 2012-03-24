@@ -84,7 +84,7 @@ not			{return(NOT);}
 {id}		{lexval.sval = newstring(yytext); return(IDNAME);}
 
 {delimiter}	;
-{newline}	{line++;fprintf(stderr, "newline - %d\n", line);}
+{newline}	{line++;}
 
 . 			{return(ERROR);}
 
