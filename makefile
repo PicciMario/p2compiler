@@ -10,4 +10,4 @@ p2lexer.c: p2lexer.lex
 	flex -o p2lexer.c --header-file=p2lexer.h p2lexer.lex
 	
 clean:
-	rm p2lexer.o p2lexer.c p2lexer.h
+	rm p2lexer.o p2lexer.c p2lexer.h parser_ebnf

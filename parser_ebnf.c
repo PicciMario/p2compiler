@@ -14,6 +14,7 @@ int main() {
 
 void next(){
 	int result = yylex();
+	printf("Next symbol: %d\n", result);
 	if (result == ERROR){
 		printf("Errore sintattico alla linea %d - %s", line, yytext);
 	}
@@ -24,27 +25,28 @@ void next(){
 
 void match(int symbol){
 	if (lookahead == symbol){
+			printf("Matched symbol: %d\n", symbol);
 			next();
 	}
 	else {
-		printf("Linea %d: Mi aspettavo %d che è diverso da %d\n", line, symbol, lookahead);
+		printf("Linea %d: Mi aspettavo %d che è diverso da %d (%s)\n", line, symbol, lookahead, yytext);
 	}
 }
 
 void print_error(){
-		printf("Errore alla linea %d\n", line);
+		printf("Errore alla linea %d (yytext: %s)\n", line, yytext);
+		exit(1);
 }
 
 void parse(){
 	next();
 	parse_program();
-	
 }
 
 void parse_program(){
-		match(PROGRAM);
-		parse_stat_list();
-		match(END);		
+	match(PROGRAM);
+	parse_stat_list();
+	match(END);
 }
 
 void parse_stat_list(){
@@ -63,7 +65,7 @@ void parse_stat(){
 		case TABLE:
 			parse_def_stat();
 			break;
-		case ID:
+		case IDNAME:
 			parse_assign_stat();
 			break;
 		case IF:
@@ -89,10 +91,10 @@ void parse_def_stat(){
 }
 
 void parse_id_list() {
-	match(ID);
+	match(IDNAME);
 	while(lookahead == ',') {
 		match(',');
-		match(ID);
+		match(IDNAME);
 	}
 }
 
@@ -139,13 +141,13 @@ void parse_attr_list() {
 }
 
 void parse_attr_decl() {
-	match(ID);
+	match(IDNAME);
 	match(':');
 	parse_atomic_type();
 }
 
 void parse_assign_stat() {
-	match(ID);
+	match(IDNAME);
 	match('=');
 	parse_expr();
 }
@@ -196,9 +198,10 @@ void parse_low_term(){
 void parse_factor(){
 	if (lookahead == '('){
 		next();
-		parse_constant();
+		parse_expr();
+		match(')');
 	}
-	else if (lookahead == ID){
+	else if (lookahead == IDNAME){
 		next();
 	}
 	else if (lookahead == INTCONST || lookahead == STRCONST || lookahead == BOOLCONST || lookahead == '{'){
@@ -283,7 +286,7 @@ void parse_extend_op(){
 	match(EXTEND);
 	match('[');
 	parse_atomic_type();
-	match(ID);
+	match(IDNAME);
 	match('=');
 	parse_expr();
 	match(']');
@@ -292,7 +295,7 @@ void parse_extend_op(){
 void parse_update_op(){
 	match(UPDATE);
 	match('[');
-	match(ID);
+	match(IDNAME);
 	match('=');
 	parse_expr();
 	match(']');
@@ -369,18 +372,19 @@ void parse_while_stat(){
 void parse_read_stat(){
 	match(READ);
 	parse_specifier();
-	match(ID);
+	match(IDNAME);
 }
 
 void parse_specifier(){
 	if (lookahead == '['){
+		next();
 		parse_expr();
 		match(']');
 	}
 }
 
 void parse_write_stat(){
-	match(READ);
+	match(WRITE);
 	parse_specifier();
 	parse_expr();
 }

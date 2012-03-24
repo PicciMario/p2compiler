@@ -24,73 +24,74 @@ id			{letter}({letter}|{digit})*
 
 %%
 
-program		{ret(PROGRAM);}
-end			{ret(END);}
-integer		{ret(INTEGER);}
-string		{ret(STRING);}
-boolean		{ret(BOOLEAN);}
-id			{ret(ID);}
-table		{ret(TABLE);}
+program		{return(PROGRAM);}
+end			{return(END);}
+integer		{return(INTEGER);}
+string		{return(STRING);}
+boolean		{return(BOOLEAN);}
+id			{return(ID);}
+table		{return(TABLE);}
 
-if			{ret(IF);}
-then		{ret(THEN);}
-else		{ret(ELSE);}
+if			{return(IF);}
+then		{return(THEN);}
+else		{return(ELSE);}
 
-while		{ret(WHILE);}
-do			{ret(DO);}
+while		{return(WHILE);}
+do			{return(DO);}
 
-join		{ret(JOIN);}
-project		{ret(PROJECT);}
-select		{ret(SELECT);}
-exists		{ret(EXISTS);}
-all			{ret(ALL);}
-extend		{ret(EXTEND);}
-update		{ret(UPDATE);}
-rename		{ret(RENAME);}
+join		{return(JOIN);}
+project		{return(PROJECT);}
+select		{return(SELECT);}
+exists		{return(EXISTS);}
+all			{return(ALL);}
+extend		{return(EXTEND);}
+update		{return(UPDATE);}
+rename		{return(RENAME);}
 
-read		{ret(READ);}
-write		{ret(WRITE);}
+read		{return(READ);}
+write		{return(WRITE);}
 
-and			{ret(AND);}
-or			{ret(OR);}
-not			{ret(NOT);}
+and			{return(AND);}
+or			{return(OR);}
+not			{return(NOT);}
 
-">"			{ret(GT);}
-">="		{ret(GE);}
-"<"			{ret(LT);}
-"<="		{ret(LE);}
-"="			{ret(EQ);}
-"!="		{ret(NEQ);}
+">"			{return(GT);}
+">="		{return(GE);}
+"<"			{return(LT);}
+"<="		{return(LE);}
+"=="		{return(EQ);}
+"!="		{return(NEQ);}
 
-":"			{ret(':');}
-","			{ret(',');}
-";"			{ret(';');}
-"+"			{ret('+');}
-"-"			{ret('-');}
-"*"			{ret('*');}
-"/"			{ret('/');}
-"("			{ret('(');}
-")"			{ret(')');}
-"["			{ret('[');}
-"]"			{ret(']');}
-"{"			{ret('{');}
-"}"			{ret('}');}
+":"			{return(':');}
+","			{return(',');}
+";"			{return(';');}
+"+"			{return('+');}
+"-"			{return('-');}
+"*"			{return('*');}
+"/"			{return('/');}
+"("			{return('(');}
+")"			{return(')');}
+"["			{return('[');}
+"]"			{return(']');}
+"{"			{return('{');}
+"}"			{return('}');}
+"="			{return('=');}
 
-{intconst}	{lexval.ival = atoi(yytext); ret(INTCONST);}
-{strconst}	{lexval.sval = newstring(yytext); ret(STRCONST);}
-{boolconst}	{lexval.ival = (yytext[0] == 'f' ? 0 : 1); ret(BOOLCONST);}
+{intconst}	{lexval.ival = atoi(yytext); return(INTCONST);}
+{strconst}	{lexval.sval = newstring(yytext); return(STRCONST);}
+{boolconst}	{lexval.ival = (yytext[0] == 'f' ? 0 : 1); return(BOOLCONST);}
 
-{id}		{lexval.sval = newstring(yytext); ret(IDNAME);}
+{id}		{lexval.sval = newstring(yytext); return(IDNAME);}
 
 {delimiter}	;
-{newline}	{line++;}
+{newline}	{line++;fprintf(stderr, "newline - %d\n", line);}
 
-. 			{ret(ERROR);}
+. 			{return(ERROR);}
 
 %%
 
 int ret(int val){
-	//fprintf(stderr, "line %i: %i (%s)", line, val, yytext);
+	//fprintf(stderr, "line %i: %i (%s)\n", line, val, yytext);
 	
 	//if (val == INTCONST){ fprintf(stderr, " (int constant: %i)", lexval.ival); }
 	
