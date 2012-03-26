@@ -64,6 +64,9 @@ int main() {
 	line = 1;
 	errors = 0;
 	parse();
+	
+	printTree(root, 0);
+
 	if (errors == 0){
 		printf("Compilation successful.\n\n");
 		return 0;
@@ -72,6 +75,68 @@ int main() {
 		printf("Compilation unsuccessful, %i errors.\n\n", errors);
 		return 1;
 	}	
+}
+
+void printTree(Pnode rootnode, int indent){
+	
+	int i;
+
+	for (i = 0; i < indent; i++){
+		printf("--");	
+	}	
+	printf(" ");
+	printNode(rootnode);	
+	printf("\n");
+
+	if (rootnode->child != NULL){
+		printTree(rootnode->child, indent+1);	
+	}
+
+	if (rootnode->brother != NULL){
+		printTree(rootnode->brother, indent);
+	}	
+}
+
+void printNode(Pnode node){
+	if (node->type == T_NONTERMINAL)
+		printf("%s", nonterminal_names[node->value.ival]);
+	else
+		if (node->type == T_ID)
+			printf("ID (%s)", node->value.sval);
+		else if (node->type == T_INTCONST)
+			printf("INT (%d)", node->value.ival);
+		else if (node->type == T_STRCONST)
+			printf("STRING (%s)", node->value.sval);
+		else if (node->type == T_BOOLCONST)
+			printf("BOOL (%s)", node->value.ival == 1?"true":"false");		
+		else if (node->type == T_EQ)
+			printf("==");
+		else if (node->type == T_NEQ)
+			printf("!=");
+		else if (node->type == T_LE)
+			printf("<=");
+		else if (node->type == T_LT)
+			printf("<");
+		else if (node->type == T_GT)
+			printf(">");
+		else if (node->type == T_GE)
+			printf(">=");
+		else if (node->type == T_AND)
+			printf("AND");
+		else if (node->type == T_OR)
+			printf("OR");
+		else if (node->type == T_NOT)
+			printf("NOT");
+		else if (node->type == T_PLUS)
+			printf("+");
+		else if (node->type == T_MINUS)
+			printf("-");
+		else if (node->type == T_MULT)
+			printf("*");
+		else if (node->type == T_DIVIDE)
+			printf("/");
+
+		else printf("%s", node_names[node->type]);
 }
 
 void next(){
@@ -99,6 +164,8 @@ void print_error(){
 	printf("Errore - linea %d (yytext: %s)\n", line, yytext);
 	errors++;
 }
+
+// Parsing functions **********************************************************
 
 void parse(){
 	next();
@@ -341,9 +408,17 @@ Pnode parse_expr() {
 	p = head = nontermnode(NBOOL_TERM);
 	p->child = parse_bool_term();
 	
-	//TODO: da sistemare
 	while(lookahead == AND || lookahead == OR){
+				
+		if (lookahead == AND){
+			p->brother = keynode(T_AND);						
+		}
+		else{
+			p->brother = keynode(T_OR);	
+		}
+					
 		next();
+		p = p->brother;
 
 		p->brother = nontermnode(NBOOL_TERM);
 		p = p->brother;
@@ -359,18 +434,29 @@ Pnode parse_bool_term(){
 	head = p = nontermnode(NCOMP_TERM);
 	p->child = parse_comp_term();
 
-	//TODO: da sistemare
 	if (lookahead == EQ || lookahead == NEQ || lookahead == GT || lookahead == GE || lookahead == LT || lookahead == LE){
 		switch (lookahead){
 			case EQ:
+				p->brother = keynode(T_EQ);
+				break;
 			case NEQ:
+				p->brother = keynode(T_NEQ);
+				break;
 			case GT:
+				p->brother = keynode(T_GT);
+				break;
 			case GE:
+				p->brother = keynode(T_GE);
+				break;
 			case LT:
+				p->brother = keynode(T_LT);
+				break;
 			case LE:	
-				;	
+				p->brother = keynode(T_LE);
+				break;	
 		}
-
+	
+		p = p->brother;
 		next();
 
 		p->brother = nontermnode(NCOMP_TERM);
@@ -388,8 +474,14 @@ Pnode parse_comp_term(){
 	p = head = nontermnode(NLOW_TERM);
 	p->child = parse_low_term();
 	
-	//TODO: da sistemare
 	while (lookahead == '+' || lookahead == '-') {
+		
+		if (lookahead == '+')
+			p->brother = keynode(T_PLUS);
+		else
+			p->brother = keynode(T_MINUS);
+		
+		p = p->brother;	
 		next();
 
 		p->brother = nontermnode(NLOW_TERM);
@@ -406,10 +498,16 @@ Pnode parse_low_term(){
 	p = head = nontermnode(NFACTOR);
 	p->child = parse_factor();
 	
-	//TODO: da sistemare
 	while(lookahead == '*' || lookahead == '/' || lookahead == JOIN){
-		if (lookahead == '*' || lookahead == '/'){
+		if (lookahead == '*'){
+			p->brother = keynode(T_MULT);			
 			next();
+			p = p->brother;
+		}
+		else if (lookahead == '/'){
+			p->brother = keynode(T_DIVIDE);
+			next();
+			p = p->brother;
 		}
 		else{
 			p->brother = nontermnode(NJOIN_OP);
@@ -459,13 +557,12 @@ Pnode parse_unary_op(){
 
 	Pnode p;
 
-	//TODO: da sistemare
 	switch (lookahead){
 		case '-':
-			next();
+			p = keynode(T_MINUS);
 			break;
 		case NOT:
-			next();
+			p = keynode(T_NOT);
 			break;
 		case PROJECT:
 			p = nontermnode(NPROJECT_OP);
@@ -658,8 +755,16 @@ Pnode parse_atomic_const(){
 
 	Pnode p;
 	
-	//TODO: da sistemare
-	if (lookahead == INTCONST || lookahead == STRCONST || lookahead == BOOLCONST){
+	if (lookahead == INTCONST){
+		p = intconstnode();
+		next();
+	}
+	else if (lookahead == BOOLCONST){
+		p = boolconstnode();
+		next();
+	}
+	else if (lookahead == STRCONST){
+		p = strconstnode();
 		next();
 	}
 	else

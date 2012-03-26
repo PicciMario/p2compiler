@@ -12,8 +12,45 @@ typedef enum {
 	T_BOOLCONST,
 	T_STRCONST,
 	T_ID,
-	T_NONTERMINAL
+	T_NONTERMINAL,
+	T_AND,
+	T_OR,
+	T_NOT,
+	T_EQ,
+	T_NEQ,
+	T_LE,
+	T_LT,
+	T_GE,
+	T_GT,
+	T_PLUS,
+	T_MINUS,
+	T_MULT,
+	T_DIVIDE
 } Typenode;
+
+const char* node_names[] = {
+	"T_INTEGER",
+	"T_STRING",
+	"T_BOOLEAN",
+	"T_INTCONST",
+	"T_BOOLCONST",
+	"T_STRCONST",
+	"T_ID",
+	"T_NONTERMINAL",
+	"T_AND",
+	"T_OR",
+	"T_NOT",
+	"T_EQ",
+	"T_NEQ",
+	"T_LE",
+	"T_LT",
+	"T_GE",
+	"T_GT",
+	"T_PLUS",
+	"T_MINUS",
+	"T_MULT",
+	"T_DIVIDE"
+};
 
 // Non terminals
 typedef enum {
@@ -53,6 +90,43 @@ typedef enum {
 	NWRITE_STAT
 } Nonterminal;
 
+const char* nonterminal_names[] = {
+	"PROGRAM",
+	"STAT_LIST",
+	"STAT",
+	"DEF_STAT",
+	"ID_LIST",
+	"TYPE",
+	"ATOMIC_TYPE",
+	"TABLE_TYPE",
+	"ATTR_LIST",
+	"ATTR_DECL",
+	"ASSIGN_STAT",
+	"EXPR",
+	"BOOL_TERM",
+	"COMP_TERM",
+	"LOW_TERM",
+	"FACTOR",
+	"UNARY_OP",
+	"JOIN_OP",
+	"PROJECT_OP",
+	"SELECT_OP",
+	"EXISTS_OP",
+	"ALL_OP",
+	"EXTEND_OP",
+	"UPDATE_OP",
+	"RENAME_OP",
+	"CONSTANT",
+	"ATOMIC_CONST",
+	"TABLE_CONST",
+	"TUPLE_CONST",
+	"IF_STAT",
+	"WHILE_STAT",
+	"READ_STAT",
+	"SPECIFIER",
+	"WRITE_STAT"
+};
+
 // Node structure
 typedef struct snode{
 	Typenode type;
@@ -75,6 +149,8 @@ Pnode boolconstnode();
 void next();
 void match2(int symbol, const char* func);
 void print_error();
+void printTree(Pnode, int);
+void printNode(Pnode);
 
 // Parsing rules prototypes
 void parse();
