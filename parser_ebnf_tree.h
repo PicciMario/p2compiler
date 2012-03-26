@@ -49,7 +49,7 @@ typedef enum {
 	NIF_STAT,
 	NWHILE_STAT,
 	NREAD_STAT,
-	NSPECIFIED,
+	NSPECIFIER,
 	NWRITE_STAT
 } Nonterminal;
 
