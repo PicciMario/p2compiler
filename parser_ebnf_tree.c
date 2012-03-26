@@ -82,11 +82,19 @@ void printTree(Pnode rootnode, int indent){
 	int i;
 
 	for (i = 0; i < indent; i++){
-		printf("--");	
+		if (children[i] == 1)
+			printf("|  ");
+		else
+			printf("   ");	
 	}	
-	printf(" ");
+	printf("|->");
 	printNode(rootnode);	
 	printf("\n");
+
+	if (rootnode->brother != NULL)
+		children[indent] = 1;
+	else
+		children[indent] = 0;
 
 	if (rootnode->child != NULL){
 		printTree(rootnode->child, indent+1);	
@@ -95,6 +103,8 @@ void printTree(Pnode rootnode, int indent){
 	if (rootnode->brother != NULL){
 		printTree(rootnode->brother, indent);
 	}	
+	
+	children[indent] = 0;
 }
 
 void printNode(Pnode node){
@@ -207,28 +217,33 @@ Pnode parse_stat_list(){
 Pnode parse_stat(){
 	
 	Pnode p = NULL;
-	p = nontermnode(NDEF_STAT);
 
 	switch (lookahead){
 		case INTEGER:
 		case STRING:
 		case BOOLEAN:
 		case TABLE:
+			p = nontermnode(NDEF_STAT);
 			p->child = parse_def_stat();
 			break;
 		case IDNAME:
+			p = nontermnode(NASSIGN_STAT);
 			p->child = parse_assign_stat();
 			break;
 		case IF:
+			p = nontermnode(NIF_STAT);
 			p->child = parse_if_stat();
 			break;
 		case WHILE:
+			p = nontermnode(NWHILE_STAT);
 			p->child = parse_while_stat();
 			break;
 		case READ:
+			p = nontermnode(NREAD_STAT);
 			p->child = parse_read_stat();
 			break;
 		case WRITE:
+			p = nontermnode(NWRITE_STAT);
 			p->child = parse_write_stat();
 			break;
 		default:
@@ -872,7 +887,7 @@ Pnode parse_read_stat(){
 
 	match2(READ, __func__);
 
-	p = nontermnode(NSPECIFIER);
+	p = head = nontermnode(NSPECIFIER);
 	p->child = parse_specifier();
 
 	p->brother = idnode();
