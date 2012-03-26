@@ -1,5 +1,5 @@
 void next();
-void match(int symbol);
+void match2(int symbol, const char* func);
 void print_error();
 
 void parse();

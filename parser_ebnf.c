@@ -5,36 +5,48 @@
 #include "parser_ebnf.h"
 
 int lookahead;
+int errors;
 
 int main() {
 	printf("\nCompiling, please wait..\n");
 	line = 1;
+	errors = 0;
 	parse();
-	printf("Compilation successful.\n\n");
-	return 0;
+	if (errors == 0){
+		printf("Compilation successful.\n\n");
+		return 0;
+	}	
+	else{
+		printf("Compilation unsuccessful, %i errors.\n\n", errors);
+		return 1;
+	}	
 }
 
 void next(){
 	int result = yylex();
 	if (result == ERROR){
 		printf("Errore - sintattico alla linea %d - %s\n", line, yytext);
+		errors++;
 	}
 	else {
 		lookahead = result;
 	}
 }
 
-void match(int symbol){
+void match2(int symbol, const char* func){
 	if (lookahead == symbol){
 			next();
 	}
 	else {
-		printf("Errore - linea %d: mi aspettavo %d, invece ho %d (yytext: %s)\n", line, symbol, lookahead, yytext);
+		printf("Errore - linea %d, funzione %s: mi aspettavo %d, invece ho %d (yytext: %s)\n", line, func, symbol, lookahead, yytext);
+		errors++;
 	}
 }
 
+
 void print_error(){
 		printf("Errore - linea %d (yytext: %s)\n", line, yytext);
+		errors++;
 }
 
 void parse(){
@@ -43,15 +55,15 @@ void parse(){
 }
 
 void parse_program(){
-	match(PROGRAM);
+	match2(PROGRAM, __func__);
 	parse_stat_list();
-	match(END);
+	match2(END, __func__);
 }
 
 void parse_stat_list(){
 	parse_stat();
 	while (lookahead == ';') {
-		match(';');
+		match2(';', __func__);
 		parse_stat();
 	}
 }
@@ -80,7 +92,8 @@ void parse_stat(){
 			parse_write_stat();
 			break;
 		default:
-			fprintf(stderr, "Errore - riga %d durante chiamata funzione %s\n", line, __func__);
+			fprintf(stderr, "Errore - linea %d, funzione %s\n", line, __func__);
+			errors++;
 			next();
 	}
 }
@@ -91,10 +104,10 @@ void parse_def_stat(){
 }
 
 void parse_id_list() {
-	match(IDNAME);
+	match2(IDNAME, __func__);
 	while(lookahead == ',') {
-		match(',');
-		match(IDNAME);
+		match2(',', __func__);
+		match2(IDNAME, __func__);
 	}
 }
 
@@ -109,7 +122,8 @@ void parse_type() {
 			parse_table_type();
 			break;
 		default:
-			fprintf(stderr, "Errore - riga %d durante chiamata funzione %s\n", line, __func__);
+			fprintf(stderr, "Errore - linea %d, funzione %s\n", line, __func__);
+			errors++;
 			next();
 	}	
 }
@@ -128,29 +142,29 @@ void parse_atomic_type() {
 }
 
 void parse_table_type() {
-	match(TABLE);
-	match('(');
+	match2(TABLE, __func__);
+	match2('(', __func__);
 	parse_attr_list();
-	match(')');
+	match2(')', __func__);
 }
 
 void parse_attr_list() {
 	parse_attr_decl();
 	while (lookahead == ','){
-		match(',');
+		match2(',', __func__);
 		parse_attr_decl();
 	}
 }
 
 void parse_attr_decl() {
-	match(IDNAME);
-	match(':');
+	match2(IDNAME, __func__);
+	match2(':', __func__);
 	parse_atomic_type();
 }
 
 void parse_assign_stat() {
-	match(IDNAME);
-	match('=');
+	match2(IDNAME, __func__);
+	match2('=', __func__);
 	parse_expr();
 }
 
@@ -202,7 +216,7 @@ void parse_factor(){
 	if (lookahead == '('){
 		next();
 		parse_expr();
-		match(')');
+		match2(')', __func__);
 	}
 	else if (lookahead == IDNAME){
 		next();
@@ -246,70 +260,71 @@ void parse_unary_op(){
 			parse_rename_op();
 			break;
 		default:
-			fprintf(stderr, "Errore - riga %d durante chiamata funzione %s\n", line, __func__);
+			fprintf(stderr, "Errore - linea %d, funzione %s\n", line, __func__);
+			errors++;
 			next();
 	}
 }
 
 void parse_join_op(){
-	match(JOIN);
-	match('[');
+	match2(JOIN, __func__);
+	match2('[', __func__);
 	parse_expr();
-	match(']');
+	match2(']', __func__);
 }
 
 void parse_project_op(){
-	match(PROJECT);
-	match('[');
+	match2(PROJECT, __func__);
+	match2('[', __func__);
 	parse_id_list();
-	match(']');
+	match2(']', __func__);
 }
 
 void parse_select_op(){
-	match(SELECT);
-	match('[');
+	match2(SELECT, __func__);
+	match2('[', __func__);
 	parse_expr();
-	match(']');
+	match2(']', __func__);
 }
 
 void parse_exists_op(){
-	match(EXISTS);
-	match('[');
+	match2(EXISTS, __func__);
+	match2('[', __func__);
 	parse_expr();
-	match(']');
+	match2(']', __func__);
 }
 
 void parse_all_op(){
-	match(ALL);
-	match('[');
+	match2(ALL, __func__);
+	match2('[', __func__);
 	parse_expr();
-	match(']');
+	match2(']', __func__);
 }
 
 void parse_extend_op(){
-	match(EXTEND);
-	match('[');
+	match2(EXTEND, __func__);
+	match2('[', __func__);
 	parse_atomic_type();
-	match(IDNAME);
-	match('=');
+	match2(IDNAME, __func__);
+	match2('=', __func__);
 	parse_expr();
-	match(']');
+	match2(']', __func__);
 }
 
 void parse_update_op(){
-	match(UPDATE);
-	match('[');
-	match(IDNAME);
-	match('=');
+	match2(UPDATE, __func__);
+	match2('[', __func__);
+	match2(IDNAME, __func__);
+	match2('=', __func__);
 	parse_expr();
-	match(']');
+	match2(']', __func__);
 }
 
 void parse_rename_op(){
-	match(JOIN);
-	match('[');
+	match2(JOIN, __func__);
+	match2('[', __func__);
 	parse_id_list();
-	match(']');
+	match2(']', __func__);
 }
 
 void parse_constant(){
@@ -332,7 +347,7 @@ void parse_atomic_const(){
 }
 
 void parse_table_const(){
-	match('{');
+	match2('{', __func__);
 	if (lookahead == '('){
 		parse_tuple_const();
 		while (lookahead == ','){
@@ -340,55 +355,55 @@ void parse_table_const(){
 			parse_tuple_const();
 		}
 	}
-	match('}');
+	match2('}', __func__);
 }
 
 void parse_tuple_const(){
-	match('(');
+	match2('(', __func__);
 	parse_atomic_const();
 	while (lookahead == ','){
 		next();
 		parse_atomic_const();
 	}	
-	match(')');
+	match2(')', __func__);
 }
 
 void parse_if_stat(){
-	match(IF);
+	match2(IF, __func__);
 	parse_expr();
-	match(THEN);
+	match2(THEN, __func__);
 	parse_stat_list();
 	if (lookahead == ELSE){
 		next();
 		parse_stat_list();
 	}
-	match(END);
+	match2(END, __func__);
 }
 
 void parse_while_stat(){
-	match(WHILE);
+	match2(WHILE, __func__);
 	parse_expr();
-	match(DO);
+	match2(DO, __func__);
 	parse_stat_list();
-	match(END);
+	match2(END, __func__);
 }
 
 void parse_read_stat(){
-	match(READ);
+	match2(READ, __func__);
 	parse_specifier();
-	match(IDNAME);
+	match2(IDNAME, __func__);
 }
 
 void parse_specifier(){
 	if (lookahead == '['){
 		next();
 		parse_expr();
-		match(']');
+		match2(']', __func__);
 	}
 }
 
 void parse_write_stat(){
-	match(WRITE);
+	match2(WRITE, __func__);
 	parse_specifier();
 	parse_expr();
 }
