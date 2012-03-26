@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "p2symbols.h"
+#include "p2lexer.h"
+
 void next();
 void match2(int symbol, const char* func);
 void print_error();

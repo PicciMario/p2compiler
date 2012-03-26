@@ -1,7 +1,63 @@
-#include "parser_ebnf.h"
+#include "parser_ebnf_tree.h"
+
+extern Lexval lexval;
+extern int line;
+
+Pnode root = NULL;
 
 int lookahead;
 int errors;
+
+// Node functions *************************************************************
+
+Pnode newnode(Typenode tnode){
+	Pnode p;
+	p = (Pnode)malloc(sizeof(Node));
+	p->type = tnode;
+	p->child = p->brother = NULL;
+	return(p);
+}
+
+Pnode nontermnode(Nonterminal nonterm){
+	Pnode p;
+	p = newnode(T_NONTERMINAL);
+	p->value.ival = nonterm;
+	return(p);
+}
+
+Pnode keynode(Typenode keyword){
+	return(newnode(keyword));
+}
+
+Pnode idnode(){
+	Pnode p;
+	p = newnode(T_ID);
+	p->value.sval = lexval.sval;
+	return(p);
+}
+
+Pnode intconstnode(){
+	Pnode p;
+	p = newnode(T_INTCONST);
+	p->value.ival = lexval.ival;
+	return(p);
+}
+
+Pnode strconstnode(){
+	Pnode p;
+	p = newnode(T_STRCONST);
+	p->value.sval = lexval.sval;
+	return(p);
+}
+
+Pnode boolconstnode(){
+	Pnode p;
+	p = newnode(T_BOOLCONST);
+	p->value.ival = lexval.ival;
+	return(p);
+}
+
+// ****************************************************************************
 
 int main() {
 	printf("\nCompiling, please wait..\n");
@@ -31,7 +87,7 @@ void next(){
 
 void match2(int symbol, const char* func){
 	if (lookahead == symbol){
-			next();
+		next();
 	}
 	else {
 		printf("Errore - linea %d, funzione %s: mi aspettavo %d, invece ho %d (yytext: %s)\n", line, func, symbol, lookahead, yytext);
@@ -41,189 +97,362 @@ void match2(int symbol, const char* func){
 
 
 void print_error(){
-		printf("Errore - linea %d (yytext: %s)\n", line, yytext);
-		errors++;
+	printf("Errore - linea %d (yytext: %s)\n", line, yytext);
+	errors++;
 }
 
 void parse(){
 	next();
-	parse_program();
+	root = nontermnode(NPROGRAM);
+	root->child = parse_program();
 }
 
-void parse_program(){
+Pnode parse_program(){
 	match2(PROGRAM, __func__);
-	parse_stat_list();
+
+	Pnode p;
+
+	p = nontermnode(NSTAT_LIST);
+	p->child = parse_stat_list();
+
 	match2(END, __func__);
+	
+	return(p);
 }
 
-void parse_stat_list(){
-	parse_stat();
+Pnode parse_stat_list(){
+	
+	Pnode head, p;
+
+	head = p = nontermnode(NSTAT);
+	p->child = parse_stat();
+
 	while (lookahead == ';') {
 		match2(';', __func__);
-		parse_stat();
+
+		p->brother = nontermnode(NSTAT);
+		p = p->brother;
+		p->child = parse_stat();
 	}
+
+	return(head);
 }
 
-void parse_stat(){
+Pnode parse_stat(){
+	
+	Pnode p;
+	p = nontermnode(NDEF_STAT);
+
 	switch (lookahead){
 		case INTEGER:
 		case STRING:
 		case BOOLEAN:
 		case TABLE:
-			parse_def_stat();
+			p->child = parse_def_stat();
 			break;
 		case IDNAME:
-			parse_assign_stat();
+			p->child = parse_assign_stat();
 			break;
 		case IF:
-			parse_if_stat();
+			p->child = parse_if_stat();
 			break;
 		case WHILE:
-			parse_while_stat();
+			p->child = parse_while_stat();
 			break;
 		case READ:
-			parse_read_stat();
+			p->child = parse_read_stat();
 			break;
 		case WRITE:
-			parse_write_stat();
+			p->child = parse_write_stat();
 			break;
 		default:
 			fprintf(stderr, "Errore - linea %d, funzione %s\n", line, __func__);
 			errors++;
 			next();
 	}
+
+	return(p);
 }
 
-void parse_def_stat(){
-	parse_type();
-	parse_id_list();
+Pnode parse_def_stat(){
+
+	Pnode head, p;
+	head = p = nontermnode(NTYPE);
+
+	p->child = parse_type();
+	
+	p->brother = nontermnode(NID_LIST);
+	p = p->brother;	
+	p->child = parse_id_list();
+
+	return(head);
 }
 
-void parse_id_list() {
-	match2(IDNAME, __func__);
-	while(lookahead == ',') {
-		match2(',', __func__);
-		match2(IDNAME, __func__);
+Pnode parse_id_list() {
+	
+	Pnode p, head;
+
+	if (lookahead == IDNAME){
+		head = p = idnode();
+		next();
+
+		while(lookahead == ',') {
+
+			match2(',', __func__);
+
+			if (lookahead == IDNAME){
+				p->brother = idnode();
+				p = p->brother;				
+			}
+			else{
+				fprintf(stderr, "Errore - linea %d, funzione %s\n", line, __func__);
+				errors++;
+				next();				
+			}
+		}
 	}
+	else {
+		fprintf(stderr, "Errore - linea %d, funzione %s\n", line, __func__);
+		errors++;
+		next();
+	}
+
+	return(head);
 }
 
-void parse_type() {
+Pnode parse_type() {
+
+	Pnode p;
+
 	switch (lookahead){
 		case INTEGER:
 		case STRING:
 		case BOOLEAN:
-			parse_atomic_type();
+			p = nontermnode(NATOMIC_TYPE);
+			p->child = parse_atomic_type();
 			break;
 		case TABLE:
-			parse_table_type();
+			p = nontermnode(NTABLE_TYPE);
+			p->child = parse_table_type();
 			break;
 		default:
 			fprintf(stderr, "Errore - linea %d, funzione %s\n", line, __func__);
 			errors++;
 			next();
-	}	
+	}
+	
+	return(p);
+	
 }
 
-void parse_atomic_type() {
+Pnode parse_atomic_type() {
+
+	Pnode p;
+
 	switch (lookahead){
 		case INTEGER:
+			p = keynode(T_INTEGER);
+			next();			
+			break;
 		case STRING:
+			p = keynode(T_STRING);
+			next();
+			break;
 		case BOOLEAN:
+			p = keynode(T_BOOLEAN);
 			next();
 			break;
 		default:
 			print_error();
 			next();
 	}
+
+	return(p);
 }
 
-void parse_table_type() {
+Pnode parse_table_type() {
+
+	Pnode p;
+	p = nontermnode(NATTR_LIST);
+
 	match2(TABLE, __func__);
 	match2('(', __func__);
-	parse_attr_list();
+	p->child = parse_attr_list();
 	match2(')', __func__);
+
+	return(p);
 }
 
-void parse_attr_list() {
-	parse_attr_decl();
+Pnode parse_attr_list() {
+
+	Pnode p, head;
+	
+	p = head = nontermnode(NATTR_DECL);
+	p->child = parse_attr_decl();
+
 	while (lookahead == ','){
 		match2(',', __func__);
-		parse_attr_decl();
+		
+		p->brother = nontermnode(NATTR_DECL);
+		p = p->brother;
+		p->child = parse_attr_decl();
 	}
+	
+	return(p);
+
 }
 
-void parse_attr_decl() {
-	match2(IDNAME, __func__);
+Pnode parse_attr_decl() {
+
+	Pnode head, p;
+
+	head = p = idnode();
+	next();
+
 	match2(':', __func__);
-	parse_atomic_type();
+
+	p->brother = nontermnode(NATOMIC_TYPE);	
+	p = p->brother;	
+	p->child = parse_atomic_type();
+
+	return(head);
 }
 
-void parse_assign_stat() {
-	match2(IDNAME, __func__);
+Pnode parse_assign_stat() {
+
+	Pnode head, p;	
+
+	head = p = idnode();
+	next();
+
 	match2('=', __func__);
-	parse_expr();
+
+	p->brother = nontermnode(NEXPR);
+	p = p->brother;	
+	p->child = parse_expr();
+
+	return(head);
 }
 
-void parse_expr() {
-	parse_bool_term();
+Pnode parse_expr() {
+
+	Pnode p, head;
+	
+	p = head = nontermnode(NBOOL_TERM);
+	p->child = parse_bool_term();
+	
+	//TODO: da sistemare
 	while(lookahead == AND || lookahead == OR){
 		next();
-		parse_bool_term();
+
+		p->brother = nontermnode(NBOOL_TERM);
+		p = p->brother;
+		p->child = parse_bool_term();
 	}
+
+	return(head);
 }
 
-void parse_bool_term(){
-	parse_comp_term();
-	switch (lookahead){
-		case EQ:
-		case NEQ:
-		case GT:
-		case GE:
-		case LT:
-		case LE:
-			next();
-			parse_comp_term();
-			break;		
+Pnode parse_bool_term(){
+	
+	Pnode head, p;
+	head = p = nontermnode(NCOMP_TERM);
+	p->child = parse_comp_term();
+
+	//TODO: da sistemare
+	if (lookahead == EQ || lookahead == NEQ || lookahead == GT || lookahead == GE || lookahead == LT || lookahead == LE){
+		switch (lookahead){
+			case EQ:
+			case NEQ:
+			case GT:
+			case GE:
+			case LT:
+			case LE:	
+				;	
+		}
+
+		next();
+
+		p->brother = nontermnode(NCOMP_TERM);
+		p = p->brother;			
+		p->child = parse_comp_term();
+
 	}
+
+	return(head);
 }
 
-void parse_comp_term(){
-	parse_low_term();
+Pnode parse_comp_term(){
+
+	Pnode p, head;
+	p = head = nontermnode(NLOW_TERM);
+	p->child = parse_low_term();
+	
+	//TODO: da sistemare
 	while (lookahead == '+' || lookahead == '-') {
 		next();
-		parse_low_term();
+
+		p->brother = nontermnode(NLOW_TERM);
+		p = p->brother;		
+		p->child = parse_low_term();
 	}
+
+	return(head);
 }
 
-void parse_low_term(){
-	parse_factor();
+Pnode parse_low_term(){
+
+	Pnode p, head;
+	p = head = nontermnode(NFACTOR);
+	p->child = parse_factor();
+	
+	//TODO: da sistemare
 	while(lookahead == '*' || lookahead == '/' || lookahead == JOIN){
 		if (lookahead == '*' || lookahead == '/'){
 			next();
 		}
 		else{
-			parse_join_op();
+			p->brother = nontermnode(NJOIN_OP);
+			p = p->brother;
+			p->child = parse_join_op();
 		}
-		parse_factor();
+		
+		p->brother = nontermnode(NFACTOR);
+		p = p->brother;		
+		p->child = parse_factor();
 	}
+	
+	return(head);
 }
 
-void parse_factor(){
+Pnode parse_factor(){
+
+	Pnode p, head;
+
 	if (lookahead == '('){
 		next();
-		parse_expr();
+		p = head = nontermnode(NEXPR);
+		p->child = parse_expr();
 		match2(')', __func__);
 	}
 	else if (lookahead == IDNAME){
+		p = head = idnode();
 		next();
 	}
 	else if (lookahead == INTCONST || lookahead == STRCONST || lookahead == BOOLCONST || lookahead == '{'){
-		parse_constant();
+		p = head = nontermnode(NCONSTANT);
+		p->child = parse_constant();
 	}
 	else {
-		parse_unary_op();
-		parse_factor();
+		p = head = nontermnode(NUNARY_OP);
+		p->child = parse_unary_op();
+		
+		p->brother = nontermnode(NFACTOR);		
+		p = p->brother;		
+		p->child = parse_factor();
 	}
+
+	return(head);
 }
 
 void parse_unary_op(){
