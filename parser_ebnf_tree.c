@@ -176,7 +176,7 @@ void parse(){
 Pnode parse_program(){
 	match2(PROGRAM, __func__);
 
-	Pnode p;
+	Pnode p = NULL;
 
 	p = nontermnode(NSTAT_LIST);
 	p->child = parse_stat_list();
@@ -188,7 +188,7 @@ Pnode parse_program(){
 
 Pnode parse_stat_list(){
 	
-	Pnode head, p;
+	Pnode head, p = NULL;
 
 	head = p = nontermnode(NSTAT);
 	p->child = parse_stat();
@@ -206,7 +206,7 @@ Pnode parse_stat_list(){
 
 Pnode parse_stat(){
 	
-	Pnode p;
+	Pnode p = NULL;
 	p = nontermnode(NDEF_STAT);
 
 	switch (lookahead){
@@ -242,7 +242,7 @@ Pnode parse_stat(){
 
 Pnode parse_def_stat(){
 
-	Pnode head, p;
+	Pnode head, p = NULL;
 	head = p = nontermnode(NTYPE);
 
 	p->child = parse_type();
@@ -256,7 +256,7 @@ Pnode parse_def_stat(){
 
 Pnode parse_id_list() {
 	
-	Pnode p, head;
+	Pnode p, head = NULL;
 
 	if (lookahead == IDNAME){
 		head = p = idnode();
@@ -289,7 +289,7 @@ Pnode parse_id_list() {
 
 Pnode parse_type() {
 
-	Pnode p;
+	Pnode p = NULL;
 
 	switch (lookahead){
 		case INTEGER:
@@ -314,7 +314,7 @@ Pnode parse_type() {
 
 Pnode parse_atomic_type() {
 
-	Pnode p;
+	Pnode p = NULL;
 
 	switch (lookahead){
 		case INTEGER:
@@ -339,7 +339,7 @@ Pnode parse_atomic_type() {
 
 Pnode parse_table_type() {
 
-	Pnode p;
+	Pnode p = NULL;
 	p = nontermnode(NATTR_LIST);
 
 	match2(TABLE, __func__);
@@ -352,7 +352,7 @@ Pnode parse_table_type() {
 
 Pnode parse_attr_list() {
 
-	Pnode p, head;
+	Pnode p, head = NULL;
 	
 	p = head = nontermnode(NATTR_DECL);
 	p->child = parse_attr_decl();
@@ -371,7 +371,7 @@ Pnode parse_attr_list() {
 
 Pnode parse_attr_decl() {
 
-	Pnode head, p;
+	Pnode head, p = NULL;
 
 	head = p = idnode();
 	next();
@@ -387,7 +387,7 @@ Pnode parse_attr_decl() {
 
 Pnode parse_assign_stat() {
 
-	Pnode head, p;	
+	Pnode head, p = NULL;	
 
 	head = p = idnode();
 	next();
@@ -403,7 +403,7 @@ Pnode parse_assign_stat() {
 
 Pnode parse_expr() {
 
-	Pnode p, head;
+	Pnode p, head = NULL;
 	
 	p = head = nontermnode(NBOOL_TERM);
 	p->child = parse_bool_term();
@@ -430,7 +430,7 @@ Pnode parse_expr() {
 
 Pnode parse_bool_term(){
 	
-	Pnode head, p;
+	Pnode head, p = NULL;
 	head = p = nontermnode(NCOMP_TERM);
 	p->child = parse_comp_term();
 
@@ -470,7 +470,7 @@ Pnode parse_bool_term(){
 
 Pnode parse_comp_term(){
 
-	Pnode p, head;
+	Pnode p, head = NULL;
 	p = head = nontermnode(NLOW_TERM);
 	p->child = parse_low_term();
 	
@@ -494,7 +494,7 @@ Pnode parse_comp_term(){
 
 Pnode parse_low_term(){
 
-	Pnode p, head;
+	Pnode p, head = NULL;
 	p = head = nontermnode(NFACTOR);
 	p->child = parse_factor();
 	
@@ -525,7 +525,7 @@ Pnode parse_low_term(){
 
 Pnode parse_factor(){
 
-	Pnode p, head;
+	Pnode p, head = NULL;
 
 	if (lookahead == '('){
 		next();
@@ -555,7 +555,7 @@ Pnode parse_factor(){
 
 Pnode parse_unary_op(){
 
-	Pnode p;
+	Pnode p = NULL;
 
 	switch (lookahead){
 		case '-':
@@ -603,7 +603,7 @@ Pnode parse_unary_op(){
 
 Pnode parse_join_op(){
 
-	Pnode p;
+	Pnode p = NULL;
 
 	match2(JOIN, __func__);
 	match2('[', __func__);
@@ -618,7 +618,7 @@ Pnode parse_join_op(){
 
 Pnode parse_project_op(){
 
-	Pnode p;
+	Pnode p = NULL;
 
 	match2(PROJECT, __func__);
 	match2('[', __func__);
@@ -633,7 +633,7 @@ Pnode parse_project_op(){
 
 Pnode parse_select_op(){
 
-	Pnode p;
+	Pnode p = NULL;
 
 	match2(SELECT, __func__);
 	match2('[', __func__);
@@ -648,7 +648,7 @@ Pnode parse_select_op(){
 
 Pnode parse_exists_op(){
 
-	Pnode p;
+	Pnode p = NULL;
 
 	match2(EXISTS, __func__);
 	match2('[', __func__);
@@ -663,7 +663,7 @@ Pnode parse_exists_op(){
 
 Pnode parse_all_op(){
 
-	Pnode p;
+	Pnode p = NULL;
 
 	match2(ALL, __func__);
 	match2('[', __func__);
@@ -678,7 +678,7 @@ Pnode parse_all_op(){
 
 Pnode parse_extend_op(){
 
-	Pnode p, head;
+	Pnode p, head = NULL;
 
 	match2(EXTEND, __func__);
 	match2('[', __func__);
@@ -699,7 +699,7 @@ Pnode parse_extend_op(){
 
 Pnode parse_update_op(){
 
-	Pnode head, p;
+	Pnode head, p = NULL;
 
 	match2(UPDATE, __func__);
 	match2('[', __func__);
@@ -720,7 +720,7 @@ Pnode parse_update_op(){
 
 Pnode parse_rename_op(){
 	
-	Pnode p;
+	Pnode p = NULL;
 
 	match2(JOIN, __func__);
 	match2('[', __func__);
@@ -735,7 +735,7 @@ Pnode parse_rename_op(){
 
 Pnode parse_constant(){
 	
-	Pnode p;
+	Pnode p = NULL;
 
 	if (lookahead == INTCONST || lookahead == STRCONST || lookahead == BOOLCONST){
 		p = nontermnode(NATOMIC_CONST);		
@@ -753,7 +753,7 @@ Pnode parse_constant(){
 
 Pnode parse_atomic_const(){
 
-	Pnode p;
+	Pnode p = NULL;
 	
 	if (lookahead == INTCONST){
 		p = intconstnode();
@@ -775,7 +775,7 @@ Pnode parse_atomic_const(){
 
 Pnode parse_table_const(){
 	
-	Pnode p, head;
+	Pnode p, head = NULL;
 
 	match2('{', __func__);
 	if (lookahead == '('){		
@@ -792,12 +792,15 @@ Pnode parse_table_const(){
 	}
 	match2('}', __func__);
 
-	return(head);
+	if (head == NULL)
+		return(NULL);
+	else
+		return(head);
 }
 
 Pnode parse_tuple_const(){
 
-	Pnode p, head;
+	Pnode p, head = NULL;
 
 	match2('(', __func__);
 
@@ -817,7 +820,7 @@ Pnode parse_tuple_const(){
 
 Pnode parse_if_stat(){
 
-	Pnode p, head;
+	Pnode p, head = NULL;
 
 	match2(IF, __func__);
 	
@@ -845,7 +848,7 @@ Pnode parse_if_stat(){
 
 Pnode parse_while_stat(){
 
-	Pnode p, head;
+	Pnode p, head = NULL;
 
 	match2(WHILE, __func__);
 
@@ -865,7 +868,7 @@ Pnode parse_while_stat(){
 
 Pnode parse_read_stat(){
 	
-	Pnode p, head;
+	Pnode p, head = NULL;
 
 	match2(READ, __func__);
 
@@ -880,7 +883,7 @@ Pnode parse_read_stat(){
 
 Pnode parse_specifier(){
 	
-	Pnode p;
+	Pnode p = NULL;
 
 	if (lookahead == '['){
 		next();
@@ -896,7 +899,7 @@ Pnode parse_specifier(){
 
 Pnode parse_write_stat(){
 	
-	Pnode p, head;
+	Pnode p, head = NULL;
 
 	match2(WRITE, __func__);
 
