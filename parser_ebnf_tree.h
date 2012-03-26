@@ -134,6 +134,7 @@ typedef struct snode{
 	Typenode type;
 	Lexval value;
 	struct snode *child, *brother;
+	int line;
 } Node;
 
 typedef Node *Pnode;

@@ -15,6 +15,7 @@ Pnode newnode(Typenode tnode){
 	p = (Pnode)malloc(sizeof(Node));
 	p->type = tnode;
 	p->child = p->brother = NULL;
+	p->line = line;
 	return(p);
 }
 
@@ -81,13 +82,15 @@ void printTree(Pnode rootnode, int indent){
 	
 	int i;
 
+	printf("%04d ", rootnode->line);
+
 	for (i = 0; i < indent; i++){
 		if (children[i] == 1)
-			printf("|  ");
+			printf("|   ");
 		else
-			printf("   ");	
+			printf("    ");	
 	}	
-	printf("|->");
+	printf("|-> ");
 	printNode(rootnode);	
 	printf("\n");
 
@@ -108,8 +111,9 @@ void printTree(Pnode rootnode, int indent){
 }
 
 void printNode(Pnode node){
-	if (node->type == T_NONTERMINAL)
-		printf("%s", nonterminal_names[node->value.ival]);
+	if (node->type == T_NONTERMINAL){
+		printf("%s", nonterminal_names[node->value.ival]);	
+	}
 	else
 		if (node->type == T_ID)
 			printf("ID (%s)", node->value.sval);
@@ -120,17 +124,17 @@ void printNode(Pnode node){
 		else if (node->type == T_BOOLCONST)
 			printf("BOOL (%s)", node->value.ival == 1?"true":"false");		
 		else if (node->type == T_EQ)
-			printf(" ==");
+			printf("==");
 		else if (node->type == T_NEQ)
-			printf(" !=");
+			printf("!=");
 		else if (node->type == T_LE)
-			printf(" <=");
+			printf("<=");
 		else if (node->type == T_LT)
-			printf(" <");
+			printf("<");
 		else if (node->type == T_GT)
-			printf(" >");
+			printf(">");
 		else if (node->type == T_GE)
-			printf(" >=");
+			printf(">=");
 		else if (node->type == T_AND)
 			printf("AND");
 		else if (node->type == T_OR)
@@ -138,13 +142,13 @@ void printNode(Pnode node){
 		else if (node->type == T_NOT)
 			printf("NOT");
 		else if (node->type == T_PLUS)
-			printf(" +");
+			printf("+");
 		else if (node->type == T_MINUS)
-			printf(" -");
+			printf("-");
 		else if (node->type == T_MULT)
-			printf(" *");
+			printf("*");
 		else if (node->type == T_DIVIDE)
-			printf(" /");
+			printf("/");
 
 		else printf("%s", node_names[node->type]);
 }
