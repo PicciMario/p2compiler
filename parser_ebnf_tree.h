@@ -127,7 +127,7 @@ const char* nonterminal_names[] = {
 	"WRITE_STAT"
 };
 
-int* children[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; 
+int children[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; 
 
 // Node structure
 typedef struct snode{
