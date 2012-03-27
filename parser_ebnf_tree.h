@@ -127,7 +127,8 @@ const char* nonterminal_names[] = {
 	"WRITE_STAT"
 };
 
-int children[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; 
+#define CHILDREN_RECURSION_LIMIT 100
+int children[CHILDREN_RECURSION_LIMIT]; 
 
 // Node structure
 typedef struct snode{

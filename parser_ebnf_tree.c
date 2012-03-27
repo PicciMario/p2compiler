@@ -1,12 +1,12 @@
 #include "parser_ebnf_tree.h"
 
 extern Lexval lexval;
-extern int line;
 
 Pnode root = NULL;
 
 int lookahead;
 int errors;
+int curPrintingLine = 0;
 
 // Node functions *************************************************************
 
@@ -61,6 +61,11 @@ Pnode boolconstnode(){
 // ****************************************************************************
 
 int main() {
+
+	int i;
+	for (i = 0; i < CHILDREN_RECURSION_LIMIT; i++)
+		children[i] = 0;
+
 	printf("\nCompiling, please wait..\n");
 	line = 1;
 	errors = 0;
@@ -82,7 +87,14 @@ void printTree(Pnode rootnode, int indent){
 	
 	int i;
 
-	printf("%04d ", rootnode->line);
+	if (curPrintingLine != rootnode->line){
+		curPrintingLine = rootnode->line;
+		printf("%04i ", curPrintingLine);
+	}
+	else{
+		printf(" --  ");	
+		//printf("%04d ", curPrintingLine);
+	}
 
 	for (i = 0; i < indent; i++){
 		if (children[i] == 1)
@@ -151,6 +163,7 @@ void printNode(Pnode node){
 			printf("/");
 
 		else printf("%s", node_names[node->type]);
+
 }
 
 void next(){
