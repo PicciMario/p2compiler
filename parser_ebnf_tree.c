@@ -384,7 +384,7 @@ Pnode parse_attr_list() {
 		p->child = parse_attr_decl();
 	}
 	
-	return(p);
+	return(head);
 
 }
 
@@ -392,14 +392,11 @@ Pnode parse_attr_decl() {
 
 	Pnode head, p = NULL;
 
-	head = p = idnode();
-	next();
-
-	match2(':', __func__);
-
-	p->brother = nontermnode(NATOMIC_TYPE);	
-	p = p->brother;	
+	p = head = nontermnode(NATOMIC_TYPE);
 	p->child = parse_atomic_type();
+
+	p->brother = idnode();
+	next();
 
 	return(head);
 }

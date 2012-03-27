@@ -1,6 +1,6 @@
 program
   integer a, b, c;
-  table(alpha: integer, beta: string, gamma: boolean) t1, t2;
+  table(integer alpha, string beta, boolean gamma) t1, t2;
   a = b;
   t1 = {(1, "sun"),(2, "moon")};
   t2 = {};
