@@ -98,11 +98,16 @@ void printTree(Pnode rootnode, int indent){
 
 	for (i = 0; i < indent; i++){
 		if (children[i] == 1)
-			printf("|   ");
+			printf("\u2502   ");
 		else
 			printf("    ");	
-	}	
-	printf("|-> ");
+	}
+	
+	if (rootnode->brother == NULL)
+		printf("\u2514\u2500> ");
+	else
+		printf("\u251c\u2500> ");
+
 	printNode(rootnode);	
 	printf("\n");
 
