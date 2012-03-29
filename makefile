@@ -10,7 +10,7 @@ parser_ebnf_tree: p2lexer.o parser_ebnf_tree.o
 	cc p2lexer.o parser_ebnf_tree.o -o parser_ebnf_tree
 
 parser_ebnf_tree.o: parser_ebnf_tree.c
-	cc -o parser_ebnf_tree.o -c parser_ebnf_tree.c
+	cc -std=c99 -o parser_ebnf_tree.o -c parser_ebnf_tree.c
 
 p2lexer.o: p2lexer.c
 	cc -o p2lexer.o -c p2lexer.c
