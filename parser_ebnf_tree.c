@@ -812,24 +812,65 @@ Pnode parse_table_const(){
 	Pnode p, head = NULL;
 
 	match2('{', __func__);
-	if (lookahead == '('){		
-		
-		p = head = nontermnode(NTUPLE_CONST);
-		p->child = parse_tuple_const();
 
-		while (lookahead == ','){
-			next();			
-			p->brother = nontermnode(NTUPLE_CONST);
-			p = p->brother;
-			p->child = parse_tuple_const();
-		}
+	// follows a tuple list	(the '(' opens the first tuple const)
+	if (lookahead == '('){
+		head = p = nontermnode(NTUPLE_LIST);
+		p->child = parse_tuple_list();		
 	}
+
+	// follows an atomic type list
+	else if (lookahead == INTEGER || lookahead == BOOLEAN || lookahead == STRING){
+		head = p = nontermnode(NATOMIC_TYPE_LIST);
+		p->child = parse_atomic_type_list();
+	}
+
+	// else error
+	else{
+		print_error();
+		return(NULL);
+	}
+
 	match2('}', __func__);
 
 	if (head == NULL)
 		return(NULL);
 	else
 		return(head);
+}
+
+Pnode parse_tuple_list(){
+	
+	Pnode p, head = NULL;
+	
+	p = head = nontermnode(NTUPLE_CONST);
+	p->child = parse_tuple_const();
+	
+	while(lookahead == ','){
+		next();
+		p->brother = nontermnode(NTUPLE_CONST);
+		p = p->brother;
+		p->child = parse_tuple_const();
+	}
+
+	return(head);
+}
+
+Pnode parse_atomic_type_list(){
+
+	Pnode p, head = NULL;
+	
+	p = head = nontermnode(NATOMIC_TYPE);
+	p->child = parse_atomic_type();
+	
+	while(lookahead == ','){
+		next();
+		p->brother = nontermnode(NATOMIC_TYPE);
+		p = p->brother;
+		p->child = parse_atomic_type();
+	}
+
+	return(head);
 }
 
 Pnode parse_tuple_const(){

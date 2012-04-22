@@ -82,6 +82,8 @@ typedef enum {
 	NCONSTANT,
 	NATOMIC_CONST,
 	NTABLE_CONST,
+	NTUPLE_LIST,
+	NATOMIC_TYPE_LIST,
 	NTUPLE_CONST,
 	NIF_STAT,
 	NWHILE_STAT,
@@ -119,6 +121,8 @@ const char* nonterminal_names[] = {
 	"CONSTANT",
 	"ATOMIC_CONST",
 	"TABLE_CONST",
+	"TUPLE_LIST",
+	"ATOMIC_TYPE_LIST",
 	"TUPLE_CONST",
 	"IF_STAT",
 	"WHILE_STAT",
@@ -186,6 +190,8 @@ Pnode parse_rename_op();
 Pnode parse_constant();
 Pnode parse_atomic_const();
 Pnode parse_table_const();
+Pnode parse_tuple_list();
+Pnode parse_atomic_type_list();
 Pnode parse_tuple_const();
 Pnode parse_if_stat();
 Pnode parse_while_stat();

@@ -3,7 +3,7 @@ program
   table(integer alpha, string beta, boolean gamma) t1, t2;
   a = b;
   t1 = {(1, "sun"),(2, "moon")};
-  t2 = {};
+  t2 = {integer, string, boolean};
   t3 = project [a,b] select [a == b] t1;
   a = (a == b) and (a <= b+1*(c-22)) or c;
   t3 = t1 join [a == b ] t2;
