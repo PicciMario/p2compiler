@@ -9,13 +9,16 @@ Elements:
 
 P2LEXER
 Lex code to parse to perform lexical parsing of the Tables language.
-- p2lexer.lex
+- p2lexer.lex (main lex code)
+- p2symbols.h (C header file with the symbols definition)
 
 PARSER_EBNF
 A simple parser for the Tables language, left-to-right top-bottom parsing of syntax with lookahead. No output, just error reporting. Uses the previously written lex parser.
-- parser_ebnf.c
+- parser_ebnf.c (main C code)
+- parser_ebnf.h (header file)
 
 PARSER_EBNF_TREE
 A simple parser for the tables language derived from the aforementioned one. This one also build the syntax tree and prints it in ASCII-art. Uses the previously written lex parser. Updated for the Apr. 22th, 2012 version of the specifications.
-- parser_ebnf_tree.c
+- parser_ebnf_tree.c (main c code)
+- parser_ebnf_tree.h (header file)
 
