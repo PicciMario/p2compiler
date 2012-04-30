@@ -1,7 +1,9 @@
+#ifndef __NODE_H
+#define __NODE_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "p2symbols.h"
-#include "p2lexer.h"
 
 // Node types
 typedef enum {
@@ -133,3 +135,6 @@ Pnode parse_while_stat();
 Pnode parse_read_stat();
 Pnode parse_specifier();
 Pnode parse_write_stat();
+
+#else
+#endif

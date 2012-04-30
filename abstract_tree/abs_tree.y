@@ -1,7 +1,7 @@
 %{
+	#include "node.h"
 	#include "p2lexer.h"
 	#include <stdio.h>
-	#include "node.h"
 	
 	#define YYSTYPE Pnode
 	
@@ -16,10 +16,17 @@
 
 %%
 
-	program		:	PROGRAM stat_list END
+	program		:	PROGRAM stat_list END {
+						$$ = root = nontermnode(NPROGRAM);
+						$$->child = nontermnode(NSTAT_LIST);
+						$$->child->child = $2;
+					}
 				;
 
-	stat_list	:	stat ';' stat_list
+	stat_list	:	stat ';' stat_list {
+						$$ = $1;
+						$$->brother = $3;
+					}
 				|	stat
 				;
 	
@@ -31,18 +38,28 @@
 				|	write_stat
 				;
 	
-	def_stat	:	type id_list
+	def_stat	:	type id_list {
+						$$ = nontermnode(NDEF_STAT);
+						$$->child = $1;
+						$1->brother = $2;
+					}
 				;
 			
-	id_list		: 	ID ',' id_list
-				|	ID
+	id_list		: 	ID {$$ = idnode();} ',' id_list {
+						$$ = $2;
+						$$->brother = $4;
+					}
+				|	ID {$$ = idnode();}
 				;
 				
 	type		:	atomic_type
 				|	table_type
 				;
 	
-	atomic_type	:	INTEGER
+	atomic_type	:	INTEGER {
+						$$ = nontermnode(NATOMIC_TYPE); 
+						$$->child = keynode(T_INTEGER);
+					}
 				|	STRING
 				|	BOOLEAN
 				;
@@ -197,5 +214,7 @@ void yyerror(char* message){
 
 int main(){
 	line = 1;
-	return yyparse();
+	yyparse();
+	printTree(root, 0);
+	return 0;
 }
