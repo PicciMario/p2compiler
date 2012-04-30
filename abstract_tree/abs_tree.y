@@ -1,6 +1,9 @@
 %{
 	#include "p2lexer.h"
 	#include <stdio.h>
+	#include "node.h"
+	
+	#define YYSTYPE Pnode
 
 	void yyerror(char* message);
 %}

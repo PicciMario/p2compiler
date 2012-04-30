@@ -1,7 +1,10 @@
 all: abs_tree
 
-abs_tree: abs_tree.o p2lexer.o
+abs_tree: abs_tree.o p2lexer.o node.o
 	cc -Wall -Wextra -o abs_tree *.o
+
+node.o: node.c node.h
+	cc -Wall -Wextra -o node.o -c node.c
 
 abs_tree.o: abs_tree.c
 	cc -Wall -Wextra -o abs_tree.o -c abs_tree.c

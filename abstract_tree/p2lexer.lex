@@ -1,7 +1,8 @@
 %{
 #include <stdio.h>
 #include "abs_tree.h"
-//Lexval lexval;
+#include "p2symbols.h"
+Lexval lexval;
 %}
 
 %option noyywrap
@@ -77,22 +78,22 @@ not			{return(NOT);}
 "}"			{return('}');}
 "="			{return('=');}
 
-{intconst}	//{lexval.ival = atoi(yytext); return(INTCONST);}
-{strconst}	//{lexval.sval = newstring(yytext); return(STRCONST);}
-{boolconst}	//{lexval.ival = (yytext[0] == 'f' ? 0 : 1); return(BOOLCONST);}
+{intconst}	{lexval.ival = atoi(yytext); return(INTCONST);}
+{strconst}	{lexval.sval = newstring(yytext); return(STRCONST);}
+{boolconst}	{lexval.ival = (yytext[0] == 'f' ? 0 : 1); return(BOOLCONST);}
 
-{id}		//{lexval.sval = newstring(yytext); return(IDNAME);}
+{id}		{lexval.sval = newstring(yytext); return(IDNAME);}
 
 {delimiter}	;
-{newline}	//{line++;}
+{newline}	{line++;}
 
 . 			{return(ERROR);}
 
 %%
 
-//char *newstring(char *s){
-//	char *p = malloc(strlen(s) + 1);
-//	strcpy(p, s);
-//	return(p);
-//}
+char *newstring(char *s){
+	char *p = malloc(strlen(s) + 1);
+	strcpy(p, s);
+	return(p);
+}
 
