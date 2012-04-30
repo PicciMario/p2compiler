@@ -2,12 +2,6 @@
 
 extern Lexval lexval;
 
-Pnode root = NULL;
-
-int lookahead;
-int errors;
-int curPrintingLine = 0;
-
 // Node functions *************************************************************
 
 Pnode newnode(Typenode tnode){

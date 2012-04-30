@@ -30,7 +30,6 @@ end			{return(END);}
 integer		{return(INTEGER);}
 string		{return(STRING);}
 boolean		{return(BOOLEAN);}
-id			{return(ID);}
 table		{return(TABLE);}
 
 if			{return(IF);}
@@ -82,7 +81,7 @@ not			{return(NOT);}
 {strconst}	{lexval.sval = newstring(yytext); return(STRCONST);}
 {boolconst}	{lexval.ival = (yytext[0] == 'f' ? 0 : 1); return(BOOLCONST);}
 
-{id}		{lexval.sval = newstring(yytext); return(IDNAME);}
+{id}		{lexval.sval = newstring(yytext); return(ID);}
 
 {delimiter}	;
 {newline}	{line++;}
