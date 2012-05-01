@@ -1,6 +1,10 @@
 #include "node.h"
 
 extern Lexval lexval;
+int curPrintingLine = 0;
+
+#define CHILDREN_RECURSION_LIMIT 100
+int children[CHILDREN_RECURSION_LIMIT]; 
 
 // Node functions *************************************************************
 
@@ -122,8 +126,23 @@ void printTree(Pnode rootnode, int indent){
 	
 	int i;
 
+	/*
+	if (curPrintingLine != rootnode->line){
+		curPrintingLine = rootnode->line;
+		printf("%04i ", curPrintingLine);
+	}
+	else{
+		printf(" --  ");	
+	}
+	*/
+	
+	printf("%03d  ", rootnode->line);
+	
 	for (i = 0; i < indent; i++){
-		printf("    ");	
+		if (children[i] == 1)
+			printf("\u2502   ");
+		else
+			printf("    ");	
 	}
 	
 	if (rootnode->brother == NULL)
@@ -134,6 +153,11 @@ void printTree(Pnode rootnode, int indent){
 	printNode(rootnode);	
 	printf("\n");
 
+	if (rootnode->brother != NULL)
+		children[indent] = 1;
+	else
+		children[indent] = 0;
+
 	if (rootnode->child != NULL){
 		printTree(rootnode->child, indent+1);	
 	}
@@ -141,6 +165,8 @@ void printTree(Pnode rootnode, int indent){
 	if (rootnode->brother != NULL){
 		printTree(rootnode->brother, indent);
 	}	
+	
+	children[indent] = 0;
 }
 
 void printNode(Pnode node){
