@@ -222,19 +222,26 @@ void printGraphvizTree(Pnode rootnode, int parent, int brother, FILE *file){
 
 	if (parent == 0){
 		file = fopen("graph.gv", "w");
-		fprintf(file, "graph \"\" {");
+		fprintf(file, "digraph \"\" {\n");
 	}
 	
 	int thisNode = nodeSeq = nodeSeq + 1;
 	
-	if (brother == 1){
-		fprintf(file, "{rank=same; n%04d; n%04d;}\n", thisNode, parent);
+	if (rootnode->type == T_NONTERMINAL){
+		fprintf(file, "node [shape=box]\n");
+	}
+	else{
+		fprintf(file, "node [shape=ellipse]\n");
 	}
 	
 	fprintf(file, "n%04d [label = \"%s\"]\n", thisNode, printNode(rootnode));
 	
+	if (brother == 1){
+		fprintf(file, "{rank=same; n%04d; n%04d;}\n", thisNode, parent);
+	}	
+	
 	if (parent != 0){
-		fprintf(file, "n%04d -- n%04d\n", parent, thisNode);
+		fprintf(file, "n%04d -> n%04d\n", parent, thisNode);
 	}
 	
 	if (rootnode->child != NULL){
