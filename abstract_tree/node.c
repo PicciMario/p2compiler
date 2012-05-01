@@ -150,7 +150,7 @@ void printTree(Pnode rootnode, int indent){
 	else
 		printf("\u251c\u2500> ");
 
-	printNode(rootnode);	
+	printf("%s", printNode(rootnode));	
 	printf("\n");
 
 	if (rootnode->brother != NULL)
@@ -169,46 +169,84 @@ void printTree(Pnode rootnode, int indent){
 	children[indent] = 0;
 }
 
-void printNode(Pnode node){
+char* printNode(Pnode node){
+	char *nodeDescr = malloc(100);
 	if (node->type == T_NONTERMINAL){
-		printf("%s", nonterminal_names[node->value.ival]);	
+		sprintf(nodeDescr, "%s", nonterminal_names[node->value.ival]);	
 	}
 	else
 		if (node->type == T_ID)
-			printf("ID (%s)", node->value.sval);
+			sprintf(nodeDescr, "ID (%s)", node->value.sval);
 		else if (node->type == T_INTCONST)
-			printf("INT (%d)", node->value.ival);
+			sprintf(nodeDescr, "INT (%d)", node->value.ival);
 		else if (node->type == T_STRCONST)
-			printf("STRING (%s)", node->value.sval);
+			sprintf(nodeDescr, "STRING (%s)", node->value.sval);
 		else if (node->type == T_BOOLCONST)
-			printf("BOOL (%s)", node->value.ival == 1?"true":"false");		
+			sprintf(nodeDescr, "BOOL (%s)", node->value.ival == 1?"true":"false");		
 		else if (node->type == T_EQ)
-			printf("==");
+			sprintf(nodeDescr, "==");
 		else if (node->type == T_NEQ)
-			printf("!=");
+			sprintf(nodeDescr, "!=");
 		else if (node->type == T_LE)
-			printf("<=");
+			sprintf(nodeDescr, "<=");
 		else if (node->type == T_LT)
-			printf("<");
+			sprintf(nodeDescr, "<");
 		else if (node->type == T_GT)
-			printf(">");
+			sprintf(nodeDescr, ">");
 		else if (node->type == T_GE)
-			printf(">=");
+			sprintf(nodeDescr, ">=");
 		else if (node->type == T_AND)
-			printf("AND");
+			sprintf(nodeDescr, "AND");
 		else if (node->type == T_OR)
-			printf("OR");
+			sprintf(nodeDescr, "OR");
 		else if (node->type == T_NOT)
-			printf("NOT");
+			sprintf(nodeDescr, "NOT");
 		else if (node->type == T_PLUS)
-			printf("+");
+			sprintf(nodeDescr, "+");
 		else if (node->type == T_MINUS)
-			printf("-");
+			sprintf(nodeDescr, "-");
 		else if (node->type == T_MULT)
-			printf("*");
+			sprintf(nodeDescr, "*");
 		else if (node->type == T_DIVIDE)
-			printf("/");
+			sprintf(nodeDescr, "/");
 
-		else printf("%s", node_names[node->type]);
+		else sprintf(nodeDescr, "%s", node_names[node->type]);
+	
+	return nodeDescr;
 
+}
+
+int nodeSeq = 0;
+
+void printGraphvizTree(Pnode rootnode, int parent, int brother, FILE *file){
+
+	if (parent == 0){
+		file = fopen("graph.gv", "w");
+		fprintf(file, "graph \"\" {");
+	}
+	
+	int thisNode = nodeSeq = nodeSeq + 1;
+	
+	if (brother == 1){
+		fprintf(file, "{rank=same; n%04d; n%04d;}\n", thisNode, parent);
+	}
+	
+	fprintf(file, "n%04d [label = \"%s\"]\n", thisNode, printNode(rootnode));
+	
+	if (parent != 0){
+		fprintf(file, "n%04d -- n%04d\n", parent, thisNode);
+	}
+	
+	if (rootnode->child != NULL){
+		printGraphvizTree(rootnode->child, thisNode, 0, file);
+	}
+
+	if (rootnode->brother != NULL){
+		printGraphvizTree(rootnode->brother, thisNode, 1, file);
+	}	
+	
+	if (parent == 0){
+		fprintf(file, "}");
+		fclose(file);
+	}
 }

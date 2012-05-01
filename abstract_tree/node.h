@@ -95,7 +95,8 @@ void next();
 void match2(int symbol, const char* func);
 void print_error();
 void printTree(Pnode, int);
-void printNode(Pnode);
+char *printNode(Pnode);
+void printGraphvizTree(Pnode rootnode, int parent, int brother, FILE *file);
 
 // Parsing rules prototypes
 void parse();

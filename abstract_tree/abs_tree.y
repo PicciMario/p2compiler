@@ -216,5 +216,6 @@ int main(){
 	line = 1;
 	yyparse();
 	printTree(root, 0);
+	printGraphvizTree(root, 0, 0, NULL);
 	return 0;
 }
