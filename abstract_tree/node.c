@@ -1,10 +1,7 @@
 #include "node.h"
+#include "abs_tree.h"
 
 extern Lexval lexval;
-int curPrintingLine = 0;
-
-#define CHILDREN_RECURSION_LIMIT 100
-int children[CHILDREN_RECURSION_LIMIT]; 
 
 // Node functions *************************************************************
 
@@ -21,6 +18,13 @@ Pnode nontermnode(Nonterminal nonterm){
 	Pnode p;
 	p = newnode(T_NONTERMINAL);
 	p->value.ival = nonterm;
+	return(p);
+}
+
+Pnode pseudotermnode(Typenode type, int value){
+	Pnode p;
+	p = newnode(type);
+	p->value.ival = value;
 	return(p);
 }
 
@@ -58,10 +62,17 @@ Pnode boolconstnode(){
 
 // Tree printing *************************************************************
 
+int curPrintingLine = 0;
+
+#define CHILDREN_RECURSION_LIMIT 100
+int children[CHILDREN_RECURSION_LIMIT]; 
+
 const char* node_names[] = {
-	"T_INTEGER",
-	"T_STRING",
-	"T_BOOLEAN",
+	//"T_INTEGER",
+	//"T_STRING",
+	//"T_BOOLEAN",
+	"T_ATOMIC_TYPE",
+	
 	"T_INTCONST",
 	"T_BOOLCONST",
 	"T_STRCONST",
@@ -89,7 +100,7 @@ const char* nonterminal_names[] = {
 	"DEF_STAT",
 	"ID_LIST",
 	"TYPE",
-	"ATOMIC_TYPE",
+	//"ATOMIC_TYPE",
 	"TABLE_TYPE",
 	"ATTR_LIST",
 	"ATTR_DECL",
@@ -209,6 +220,16 @@ char* printNode(Pnode node){
 			sprintf(nodeDescr, "*");
 		else if (node->type == T_DIVIDE)
 			sprintf(nodeDescr, "/");
+		else if (node->type == T_ATOMIC_TYPE){
+			if (node->value.ival == INTEGER)
+				sprintf(nodeDescr, "ATOMIC TYPE\\nINTEGER");
+			else if (node->value.ival == STRING)
+				sprintf(nodeDescr, "ATOMIC TYPE\\nSTRING");
+			else if (node->value.ival == BOOLEAN)
+				sprintf(nodeDescr, "ATOMIC TYPE\\nBOOLEAN");
+			else 
+				sprintf(nodeDescr, "ATOMIC TYPE\\n????");
+		}
 
 		else sprintf(nodeDescr, "%s", node_names[node->type]);
 	

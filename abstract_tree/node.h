@@ -7,9 +7,12 @@
 
 // Node types
 typedef enum {
-	T_INTEGER,
-	T_STRING,
-	T_BOOLEAN,
+	
+	//T_INTEGER,
+	//T_STRING,
+	//T_BOOLEAN,
+	T_ATOMIC_TYPE,
+	
 	T_INTCONST,
 	T_BOOLCONST,
 	T_STRCONST,
@@ -38,7 +41,7 @@ typedef enum {
 	NDEF_STAT,
 	NID_LIST,
 	NTYPE,
-	NATOMIC_TYPE,
+	//NATOMIC_TYPE,
 	NTABLE_TYPE,
 	NATTR_LIST,
 	NATTR_DECL,
@@ -89,6 +92,7 @@ Pnode idnode();
 Pnode intconstnode();
 Pnode strconstnode();
 Pnode boolconstnode();
+Pnode pseudotermnode(Typenode, int);
 
 // General functions prototypes
 void next();

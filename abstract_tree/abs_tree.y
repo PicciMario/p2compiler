@@ -56,22 +56,29 @@
 				|	table_type
 				;
 	
-	atomic_type	:	INTEGER {
-						$$ = nontermnode(NATOMIC_TYPE); 
-						$$->child = keynode(T_INTEGER);
+	atomic_type	:	INTEGER 	{ $$ = pseudotermnode(T_ATOMIC_TYPE, INTEGER); }
+				|	STRING 		{ $$ = pseudotermnode(T_ATOMIC_TYPE, STRING); }
+				|	BOOLEAN 	{ $$ = pseudotermnode(T_ATOMIC_TYPE, BOOLEAN); }
+				;
+				
+	table_type	:	TABLE '(' attr_list ')' {
+						$$ = nontermnode(NTABLE_TYPE);
+						$$->child = $3;
 					}
-				|	STRING
-				|	BOOLEAN
 				;
 				
-	table_type	:	TABLE '(' attr_list ')'
-				;
-				
-	attr_list	:	attr_decl ',' attr_list
+	attr_list	:	attr_decl ',' attr_list {
+						$$ = $1;
+						$$->brother = $3; 
+					}
 				|	attr_decl
 				;
 
-	attr_decl	:	atomic_type ID
+	attr_decl	:	atomic_type ID {
+						$$ = nontermnode(NATTR_DECL);
+						$$->child = $1;
+						$$->child->brother = idnode();
+					}
 				;
 	
 	assign_stat	:	ID '=' expr
@@ -213,9 +220,13 @@ void yyerror(char* message){
 }
 
 int main(){
+	int result = 0;
 	line = 1;
-	yyparse();
-	printTree(root, 0);
-	printGraphvizTree(root, 0, 0, NULL);
-	return 0;
+	result = yyparse();
+	if (result == 0){
+		printTree(root, 0);
+		printGraphvizTree(root, 0, 0, NULL);
+		return 0;
+	}
+	return 1;
 }
