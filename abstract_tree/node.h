@@ -18,19 +18,32 @@ typedef enum {
 	T_STRCONST,
 	T_ID,
 	T_NONTERMINAL,
-	T_AND,
-	T_OR,
-	T_NOT,
-	T_EQ,
-	T_NEQ,
-	T_LE,
-	T_LT,
-	T_GE,
-	T_GT,
-	T_PLUS,
-	T_MINUS,
-	T_MULT,
-	T_DIVIDE
+	
+	//T_AND,
+	//T_OR,
+	T_LOGIC_EXPR,
+	
+	//T_NOT,
+	T_NEG_EXPR,
+	
+	//T_EQ,
+	//T_NEQ,
+	//T_LE,
+	//T_LT,
+	//T_GE,
+	//T_GT,
+	T_COMP_EXPR,
+	
+	//T_PLUS,
+	//T_MINUS,
+	//T_MULT,
+	//T_DIVIDE,
+	T_MATH_EXPR,
+	
+	T_SELECT_EXPR,
+	
+	T_ERROR
+
 } Typenode;
 
 // Non terminals

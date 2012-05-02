@@ -78,19 +78,29 @@ const char* node_names[] = {
 	"T_STRCONST",
 	"T_ID",
 	"T_NONTERMINAL",
-	"T_AND",
-	"T_OR",
-	"T_NOT",
-	"T_EQ",
-	"T_NEQ",
-	"T_LE",
-	"T_LT",
-	"T_GE",
-	"T_GT",
-	"T_PLUS",
-	"T_MINUS",
-	"T_MULT",
-	"T_DIVIDE"
+	
+	//"T_AND",
+	//"T_OR",
+	"T_LOGIC_EXPR",
+	
+	//"T_NOT",
+	"T_NEG_EXPR",
+	
+	//"T_EQ",
+	//"T_NEQ",
+	//"T_LE",
+	//"T_LT",
+	//"T_GE",
+	//"T_GT",
+	"T_COMP_EXPR",
+	
+	//"T_PLUS",
+	//"T_MINUS",
+	//"T_MULT",
+	//"T_DIVIDE",
+	"T_MATH_EXPR",
+	
+	"T_SELECT_EXPR",
 };
 
 const char* nonterminal_names[] = {
@@ -194,32 +204,7 @@ char* printNode(Pnode node){
 			sprintf(nodeDescr, "STRING (%s)", node->value.sval);
 		else if (node->type == T_BOOLCONST)
 			sprintf(nodeDescr, "BOOL (%s)", node->value.ival == 1?"true":"false");		
-		else if (node->type == T_EQ)
-			sprintf(nodeDescr, "==");
-		else if (node->type == T_NEQ)
-			sprintf(nodeDescr, "!=");
-		else if (node->type == T_LE)
-			sprintf(nodeDescr, "<=");
-		else if (node->type == T_LT)
-			sprintf(nodeDescr, "<");
-		else if (node->type == T_GT)
-			sprintf(nodeDescr, ">");
-		else if (node->type == T_GE)
-			sprintf(nodeDescr, ">=");
-		else if (node->type == T_AND)
-			sprintf(nodeDescr, "AND");
-		else if (node->type == T_OR)
-			sprintf(nodeDescr, "OR");
-		else if (node->type == T_NOT)
-			sprintf(nodeDescr, "NOT");
-		else if (node->type == T_PLUS)
-			sprintf(nodeDescr, "+");
-		else if (node->type == T_MINUS)
-			sprintf(nodeDescr, "-");
-		else if (node->type == T_MULT)
-			sprintf(nodeDescr, "*");
-		else if (node->type == T_DIVIDE)
-			sprintf(nodeDescr, "/");
+
 		else if (node->type == T_ATOMIC_TYPE){
 			if (node->value.ival == INTEGER)
 				sprintf(nodeDescr, "ATOMIC TYPE\\nINTEGER");
@@ -230,7 +215,57 @@ char* printNode(Pnode node){
 			else 
 				sprintf(nodeDescr, "ATOMIC TYPE\\n????");
 		}
-
+		
+		else if (node->type == T_LOGIC_EXPR){
+			if (node->value.ival == AND)
+				sprintf(nodeDescr, "LOGIC EXPR\\nAND");
+			else if (node->value.ival == OR)
+				sprintf(nodeDescr, "LOGIC EXPR\\nOR");
+			else
+				sprintf(nodeDescr, "LOGIC EXPR\\n????");
+		}
+		
+		else if (node->type == T_COMP_EXPR){
+			if (node->value.ival == EQ)
+				sprintf(nodeDescr, "COMP EXPR\\n==");
+			else if (node->value.ival == NEQ)
+				sprintf(nodeDescr, "COMP EXPR\\n!=");
+			else if (node->value.ival == GT)
+				sprintf(nodeDescr, "COMP EXPR\\n>");	
+			else if (node->value.ival == LT)
+				sprintf(nodeDescr, "COMP EXPR\\n<");	
+			else if (node->value.ival == GE)
+				sprintf(nodeDescr, "COMP EXPR\\n>=");	
+			else if (node->value.ival == LE)
+				sprintf(nodeDescr, "COMP EXPR\\n<=");					
+		}
+		
+		else if (node->type == T_MATH_EXPR){
+			if (node->value.ival == '+')
+				sprintf(nodeDescr, "MATH EXPR\\n+");
+			else if (node->value.ival == '-')
+				sprintf(nodeDescr, "MATH EXPR\\n-");
+			else if (node->value.ival == '*')
+				sprintf(nodeDescr, "MATH EXPR\\n*");
+			else if (node->value.ival == '/')
+				sprintf(nodeDescr, "MATH EXPR\\n/");
+			else
+				sprintf(nodeDescr, "MATH EXPR\\n????");		
+		}
+		
+		else if (node->type == T_SELECT_EXPR) {
+			if (node->value.ival == SELECT)
+				sprintf(nodeDescr, "SELECT EXPR\\nSELECT");
+			else if (node->value.ival == EXISTS)
+				sprintf(nodeDescr, "SELECT EXPR\\nEXISTS");
+			else if (node->value.ival == ALL)
+				sprintf(nodeDescr, "SELECT EXPR\\nALL");
+		}
+		
+		else if (node->type == T_ERROR) {
+			sprintf(nodeDescr, "work in\\nprogress :-)");
+		}
+	
 		else sprintf(nodeDescr, "%s", node_names[node->type]);
 	
 	return nodeDescr;
