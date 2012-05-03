@@ -50,6 +50,16 @@ Pnode strconstnode(){
 	Pnode p;
 	p = newnode(T_STRCONST);
 	p->value.sval = lexval.sval;
+	
+	int i;
+	for (i = 1; ; i++){
+		if (lexval.sval[i] == '"') {
+			lexval.sval[i-1] = '\0';
+			break;
+		}
+		lexval.sval[i-1] = lexval.sval[i];
+	}
+	
 	return(p);
 }
 
